@@ -5,7 +5,6 @@ import org.testng.annotations.Test;
 import ru.stqa.pft.addressbook.model.GroupData;
 
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 
 public class GroupCreationTest extends TestBase {
@@ -15,15 +14,15 @@ public class GroupCreationTest extends TestBase {
      */
     @Test
     public void testGroupCreation() {
-        app.getNavigationHelper().goToGroupPage();
+        app.goTo().groupPage();
         // Получает значение списка количества групп до прохождения теста
-        List<GroupData> beforeRunningTest = app.getGroupHelper().getGroupList();
+        List<GroupData> beforeRunningTest = app.group().list();
 
         GroupData group = new GroupData("test1", null, null);
-        app.getGroupHelper().createGroup(group);
+        app.group().create(group);
 
         // Получает значение списка количества групп после прохождения теста
-        List<GroupData> afterRunningTest = app.getGroupHelper().getGroupList();
+        List<GroupData> afterRunningTest = app.group().list();
         Assert.assertEquals(afterRunningTest.size(), beforeRunningTest.size() + 1);
 
         // Сравниваем неупорядоченные множества

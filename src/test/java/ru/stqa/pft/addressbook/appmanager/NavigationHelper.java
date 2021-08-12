@@ -12,7 +12,7 @@ public class NavigationHelper extends HelperBase {
         super(wd);
     }
 
-    public void goToGroupPage() {
+    public void groupPage() {
         // Проверяется, что одновременно присутсвует заголовок "Groups" и кнопка "New group", если это так, то дополнительных дейтсвий не требуется,
         // и мы уже находимся на страницы "Groups", в противном случае будет выполнен клик по кнопке "Groups" для перехода в нужны блок
         if (isElementPresent(By.xpath("//h1[text()='Groups']")) && isElementPresent(By.xpath("//input[@value='New group'][1]"))) {
