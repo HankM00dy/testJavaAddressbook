@@ -16,9 +16,10 @@ public class GroupModificationTests extends TestBase {
      */
     @BeforeMethod
     public void ensurePreconditions() {
+        app.goTo().groupPage();
         // Проверяется, что существует какая-либо группа, если ее нет, то группа предварительно создается
-        if (!app.getGroupHelper().isThereAGroup()) {
-            app.getGroupHelper().createGroup(new GroupData("test1", null, null));
+        if (app.group().list().size() == 0) {
+            app.group().create(new GroupData("test1", null, null));
         }
     }
 
@@ -27,26 +28,19 @@ public class GroupModificationTests extends TestBase {
      */
     @Test
     public void testGroupModification() {
-        app.getNavigationHelper().goToGroupPage();
-
-
-        // Проверяется, что существует какая-либо группа, если ее нет, то группа предварительно создается
-        if (!app.getGroupHelper().isThereAGroup()) {
-            app.getGroupHelper().createGroup(new GroupData("test1", null, null));
-        }
 
         // Получает значение списка количества групп до прохождения теста
-        List<GroupData> beforeRunningTest = app.getGroupHelper().getGroupList();
+        List<GroupData> beforeRunningTest = app.group().list();
 
-        app.getGroupHelper().selectGroup(beforeRunningTest.size() - 1);
-        app.getGroupHelper().initGroupModification();
+        app.group().selectGroup(beforeRunningTest.size() - 1);
+        app.group().initGroupModification();
         GroupData group = new GroupData( "test1", "test2", "test3", beforeRunningTest.get(beforeRunningTest.size() - 1).getId());
-        app.getGroupHelper().fillGroupForm(group);
-        app.getGroupHelper().submitGroupModification();
-        app.getGroupHelper().returnToGroupPage();
+        app.group().fillGroupForm(group);
+        app.group().submitGroupModification();
+        app.group().returnToGroupPage();
 
         // Получает значение списка количества групп после прохождения теста
-        List<GroupData> afterRunningTest = app.getGroupHelper().getGroupList();
+        List<GroupData> afterRunningTest = app.group().list();
         Assert.assertEquals(afterRunningTest.size(), beforeRunningTest.size());
 
         /**
@@ -72,17 +66,16 @@ public class GroupModificationTests extends TestBase {
      */
     @Test
     public void testGroupModificationWithSortedCollections() {
-        app.getNavigationHelper().goToGroupPage();
 
         // Получает значение списка количества групп до прохождения теста
-        List<GroupData> beforeRunningTest = app.getGroupHelper().getGroupList();
+        List<GroupData> beforeRunningTest = app.group().list();
         int index = beforeRunningTest.size() - 1;
         GroupData group = new GroupData( "test1", "test2", "test3", beforeRunningTest.get(index).getId());
 
-        app.getGroupHelper().modifyGroup(index, group);
+        app.group().modify(index, group);
 
         // Получает значение списка количества групп после прохождения теста
-        List<GroupData> afterRunningTest = app.getGroupHelper().getGroupList();
+        List<GroupData> afterRunningTest = app.group().list();
         Assert.assertEquals(afterRunningTest.size(), beforeRunningTest.size());
 
         /**

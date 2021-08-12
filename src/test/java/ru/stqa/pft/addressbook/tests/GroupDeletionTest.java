@@ -19,35 +19,28 @@ public class GroupDeletionTest extends TestBase {
      */
     @BeforeMethod
     public void ensurePreconditions() {
+        app.goTo().groupPage();
         // Проверяется, что существует какая-либо группа, если ее нет, то группа предварительно создается
-        if (!app.getGroupHelper().isThereAGroup()) {
-            app.getGroupHelper().createGroup(new GroupData("test1", null, null));
+        if (app.group().list().size() == 0) {
+            app.group().create(new GroupData("test1", null, null));
         }
     }
 
     @Test
     public void testGroupDeletion() {
-        app.getNavigationHelper().goToGroupPage();
-
-
-        // Проверяется, что существует какая-либо группа, если ее нет, то группа предварительно создается
-        if (!app.getGroupHelper().isThereAGroup()) {
-            app.getGroupHelper().createGroup(new GroupData("test1", null, null));
-        }
 
         // Получает значение списка количества групп до прохождения теста
-        List<GroupData> beforeRunningTest = app.getGroupHelper().getGroupList();
+        List<GroupData> beforeRunningTest = app.group().list();
 
-        app.getGroupHelper().selectGroup(beforeRunningTest.size() - 1);
-        app.getGroupHelper().deleteSelectedGroup();
-        app.getGroupHelper().returnToGroupPage();
+        int index = beforeRunningTest.size() - 1;
+        app.group().delete(index);
 
         // Получает значение списка количества групп после прохождения теста
-        List<GroupData> afterRunningTest = app.getGroupHelper().getGroupList();
-        Assert.assertEquals(afterRunningTest.size(), beforeRunningTest.size() - 1);
+        List<GroupData> afterRunningTest = app.group().list();
+        Assert.assertEquals(afterRunningTest.size(), index);
 
         // Уменьшаем кол-во элементов списка на еденицу, т.к была удалена одна группа
-        beforeRunningTest.remove(beforeRunningTest.size() - 1);
+        beforeRunningTest.remove(index);
 
         // Сравниваем два списка (список beforeRunningTest станет на еденицу меньше)
         Assert.assertEquals(beforeRunningTest, afterRunningTest);
