@@ -18,7 +18,7 @@ public class GroupCreationTest extends TestBase {
         // Получает значение списка количества групп до прохождения теста
         List<GroupData> beforeRunningTest = app.group().list();
 
-        GroupData group = new GroupData("test1", null, null);
+        GroupData group = new GroupData().withName("test2");
         app.group().create(group);
 
         // Получает значение списка количества групп после прохождения теста
