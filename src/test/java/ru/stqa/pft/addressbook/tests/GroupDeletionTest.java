@@ -5,7 +5,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import ru.stqa.pft.addressbook.model.GroupData;
 
-import java.util.List;
+import java.util.Set;
 
 public class GroupDeletionTest extends TestBase {
 
@@ -21,7 +21,7 @@ public class GroupDeletionTest extends TestBase {
     public void ensurePreconditions() {
         app.goTo().groupPage();
         // Проверяется, что существует какая-либо группа, если ее нет, то группа предварительно создается
-        if (app.group().list().size() == 0) {
+        if (app.group().all().size() == 0) {
             app.group().create(new GroupData().withName("test1"));
         }
     }
@@ -30,17 +30,17 @@ public class GroupDeletionTest extends TestBase {
     public void testGroupDeletion() {
 
         // Получает значение списка количества групп до прохождения теста
-        List<GroupData> beforeRunningTest = app.group().list();
+        Set<GroupData> beforeRunningTest = app.group().all();
+        GroupData deletedGroup = beforeRunningTest.iterator().next();
 
-        int index = beforeRunningTest.size() - 1;
-        app.group().delete(index);
+        app.group().delete(deletedGroup);
 
         // Получает значение списка количества групп после прохождения теста
-        List<GroupData> afterRunningTest = app.group().list();
-        Assert.assertEquals(afterRunningTest.size(), index);
+        Set<GroupData> afterRunningTest = app.group().all();
+        Assert.assertEquals(afterRunningTest.size(), beforeRunningTest.size() - 1);
 
         // Уменьшаем кол-во элементов списка на еденицу, т.к была удалена одна группа
-        beforeRunningTest.remove(index);
+        beforeRunningTest.remove(deletedGroup);
 
         // Сравниваем два списка (список beforeRunningTest станет на еденицу меньше)
         Assert.assertEquals(beforeRunningTest, afterRunningTest);
