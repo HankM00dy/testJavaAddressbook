@@ -4,8 +4,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import ru.stqa.pft.addressbook.model.GroupData;
 
-import java.util.Comparator;
-import java.util.List;
+import java.util.Set;
 
 public class GroupCreationTest extends TestBase {
 
@@ -16,55 +15,31 @@ public class GroupCreationTest extends TestBase {
     public void testGroupCreation() {
         app.goTo().groupPage();
         // Получает значение списка количества групп до прохождения теста
-        List<GroupData> beforeRunningTest = app.group().list();
+        Set<GroupData> beforeRunningTest = app.group().all();
 
         GroupData group = new GroupData().withName("test2");
         app.group().create(group);
 
         // Получает значение списка количества групп после прохождения теста
-        List<GroupData> afterRunningTest = app.group().list();
+        Set<GroupData> afterRunningTest = app.group().all();
         Assert.assertEquals(afterRunningTest.size(), beforeRunningTest.size() + 1);
 
-        // Сравниваем неупорядоченные множества
-        // Проблема в том, что мы не знаем уникальный индентификатор новой группы, которая создается, принимаем, что это самое большое значение среди всех идентификаторов
-
-//        // В цикле сравниваются все идентификаторы
-//        int max = 0;
-//        for (GroupData g : afterRunningTest) {
-//            if (g.getId() > max ) {
-//                max = g.getId();
-//            }
-//        }
-
-        /**
-         * Упрощение решения задачи с помощью особенностей JAVA 8
-         */
-
-//        // Компоратор в данном случае является сравнивателем двух объектов
-//        int max = afterRunningTest
-//
-//                // Список превращаем в поток
-//                .stream()
-//
-//                // По потоку пробегает функция сравниватель и находит максимальный элемент
-//                .max(Comparator.comparingInt(GroupData::getId))
-//
-//                // Получаем группу с максимальным идентификатором
-//                .get()
-//
-//                // Забираем ее идентификатор
-//                .getId();
-//
-//        // Получаем самый большой Id
-//        group.setId(max);
+        group
+                // Нужно взять максимальный идентификатор
+                // Берем группу с уже известными идентификаторами
+                .withId(afterRunningTest
+                        // Превращаем ее в поток
+                        .stream()
+                        // Поток GroupData превращается в поток чисел с помощью мапинга
+                        .mapToInt((g)
+                                // Получаем поток чисел
+                                -> g.getId())
+                        // сравниваем числа
+                        .max()
+                        .getAsInt());
 
         // Добавляем новую группу
         beforeRunningTest.add(group);
-
-        Comparator<? super GroupData> byId = Comparator.comparingInt(GroupData::getId);
-        beforeRunningTest.sort(byId);
-        afterRunningTest.sort(byId);
-
         Assert.assertEquals(afterRunningTest, beforeRunningTest);
     }
 }
