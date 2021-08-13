@@ -99,7 +99,7 @@ public class GroupHelper extends HelperBase {
             int id = Integer.parseInt(element.findElement(By.tagName("input")).getAttribute("value")) ;
 
             // Создаем объект, в который вносим имя группы
-            GroupData group = new GroupData(nameOfGroup, null, null, id);
+            GroupData group = new GroupData().withId(id).withName(nameOfGroup);
 
             // Добавляем в список
             groups.add(group);

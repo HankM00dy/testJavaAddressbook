@@ -19,7 +19,7 @@ public class GroupModificationTests extends TestBase {
         app.goTo().groupPage();
         // Проверяется, что существует какая-либо группа, если ее нет, то группа предварительно создается
         if (app.group().list().size() == 0) {
-            app.group().create(new GroupData("test1", null, null));
+            app.group().create(new GroupData().withName("test1"));
         }
     }
 
@@ -31,10 +31,15 @@ public class GroupModificationTests extends TestBase {
 
         // Получает значение списка количества групп до прохождения теста
         List<GroupData> beforeRunningTest = app.group().list();
+        int index = beforeRunningTest.size() - 1;
 
-        app.group().selectGroup(beforeRunningTest.size() - 1);
+        app.group().selectGroup(index);
         app.group().initGroupModification();
-        GroupData group = new GroupData( "test1", "test2", "test3", beforeRunningTest.get(beforeRunningTest.size() - 1).getId());
+        GroupData group = new GroupData()
+                .withId(beforeRunningTest.get(index).getId())
+                .withName("test1")
+                .withHeader ("test2")
+                .withFooter("test3");
         app.group().fillGroupForm(group);
         app.group().submitGroupModification();
         app.group().returnToGroupPage();
@@ -50,7 +55,7 @@ public class GroupModificationTests extends TestBase {
         // Для такой проверки нужно использовать неупорядоченные множества
 
         // Удаляем из списка группу, которую мы выбрали для модификации, т.к она перестанет существовать
-        beforeRunningTest.remove(beforeRunningTest.size() - 1);
+        beforeRunningTest.remove(index);
 
         // Вместо нее добавляем новую группу
         beforeRunningTest.add(group);
@@ -70,7 +75,11 @@ public class GroupModificationTests extends TestBase {
         // Получает значение списка количества групп до прохождения теста
         List<GroupData> beforeRunningTest = app.group().list();
         int index = beforeRunningTest.size() - 1;
-        GroupData group = new GroupData( "test1", "test2", "test3", beforeRunningTest.get(index).getId());
+        GroupData group = new GroupData()
+                .withId(beforeRunningTest.get(index).getId())
+                .withName("test1")
+                .withHeader ("test2")
+                .withFooter("test3");
 
         app.group().modify(index, group);
 

@@ -22,7 +22,7 @@ public class GroupDeletionTest extends TestBase {
         app.goTo().groupPage();
         // Проверяется, что существует какая-либо группа, если ее нет, то группа предварительно создается
         if (app.group().list().size() == 0) {
-            app.group().create(new GroupData("test1", null, null));
+            app.group().create(new GroupData().withName("test1"));
         }
     }
 
