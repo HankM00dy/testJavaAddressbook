@@ -1,10 +1,11 @@
 package ru.stqa.pft.addressbook.tests;
 
-import org.testng.Assert;
 import org.testng.annotations.Test;
 import ru.stqa.pft.addressbook.model.GroupData;
+import ru.stqa.pft.addressbook.model.Groups;
 
-import java.util.Set;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class GroupCreationTest extends TestBase {
 
@@ -15,31 +16,14 @@ public class GroupCreationTest extends TestBase {
     public void testGroupCreation() {
         app.goTo().groupPage();
         // Получает значение списка количества групп до прохождения теста
-        Set<GroupData> beforeRunningTest = app.group().all();
+        Groups before = app.group().all();
 
         GroupData group = new GroupData().withName("test2");
         app.group().create(group);
 
         // Получает значение списка количества групп после прохождения теста
-        Set<GroupData> afterRunningTest = app.group().all();
-        Assert.assertEquals(afterRunningTest.size(), beforeRunningTest.size() + 1);
-
-        group
-                // Нужно взять максимальный идентификатор
-                // Берем группу с уже известными идентификаторами
-                .withId(afterRunningTest
-                        // Превращаем ее в поток
-                        .stream()
-                        // Поток GroupData превращается в поток чисел с помощью мапинга
-                        .mapToInt((g)
-                                // Получаем поток чисел
-                                -> g.getId())
-                        // сравниваем числа
-                        .max()
-                        .getAsInt());
-
-        // Добавляем новую группу
-        beforeRunningTest.add(group);
-        Assert.assertEquals(afterRunningTest, beforeRunningTest);
+        Groups after = app.group().all();
+        assertThat(after.size(), equalTo(before.size() + 1));
+        assertThat(after, equalTo(before.withAdded(group.withId(after.stream().mapToInt((g) -> g.getId()).max().getAsInt()))));
     }
 }

@@ -4,11 +4,9 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import ru.stqa.pft.addressbook.model.GroupData;
+import ru.stqa.pft.addressbook.model.Groups;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Помогает работать с группами
@@ -91,10 +89,10 @@ public class GroupHelper extends HelperBase {
         return wd.findElements(By.xpath("//input[@name='selected[]']")).size();
     }
 
-    public List<GroupData> list() {
+    public Groups all() {
 
         // Список, который будем заполнять, этот же список метод будет возвращать в конце
-        List<GroupData> groups = new ArrayList<>();
+        Groups groups = new Groups();
 
         // Находим нужные элементы и получаем их в список
         List<WebElement> elements = wd.findElements(By.xpath("//span[@class='group']"));
@@ -106,35 +104,8 @@ public class GroupHelper extends HelperBase {
             // Добавляем поиск по "value", т.к он является уникальным идентификатором, который мжно использовать для сравнения неупорядоченных списков (множеств)
             int id = Integer.parseInt(element.findElement(By.tagName("input")).getAttribute("value"));
 
-            // Создаем объект, в который вносим имя группы
-            GroupData group = new GroupData().withId(id).withName(nameOfGroup);
-
             // Добавляем в список
-            groups.add(group);
-        }
-        return groups;
-    }
-
-    public Set<GroupData> all() {
-
-        // Список, который будем заполнять, этот же список метод будет возвращать в конце
-        Set<GroupData> groups = new HashSet<>();
-
-        // Находим нужные элементы и получаем их в список
-        List<WebElement> elements = wd.findElements(By.xpath("//span[@class='group']"));
-
-        // Выполняем цикл
-        for (WebElement element : elements) {
-            String nameOfGroup = element.getText();
-
-            // Добавляем поиск по "value", т.к он является уникальным идентификатором, который мжно использовать для сравнения неупорядоченных списков (множеств)
-            int id = Integer.parseInt(element.findElement(By.tagName("input")).getAttribute("value"));
-
-            // Создаем объект, в который вносим имя группы
-            GroupData group = new GroupData().withId(id).withName(nameOfGroup);
-
-            // Добавляем в список
-            groups.add(group);
+            groups.add(new GroupData().withId(id).withName(nameOfGroup));
         }
         return groups;
     }

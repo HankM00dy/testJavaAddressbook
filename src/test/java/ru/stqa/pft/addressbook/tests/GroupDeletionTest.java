@@ -4,8 +4,10 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import ru.stqa.pft.addressbook.model.GroupData;
+import ru.stqa.pft.addressbook.model.Groups;
 
-import java.util.Set;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class GroupDeletionTest extends TestBase {
 
@@ -30,20 +32,15 @@ public class GroupDeletionTest extends TestBase {
     public void testGroupDeletion() {
 
         // Получает значение списка количества групп до прохождения теста
-        Set<GroupData> beforeRunningTest = app.group().all();
-        GroupData deletedGroup = beforeRunningTest.iterator().next();
+        Groups before = app.group().all();
+        GroupData deletedGroup = before.iterator().next();
 
         app.group().delete(deletedGroup);
 
         // Получает значение списка количества групп после прохождения теста
-        Set<GroupData> afterRunningTest = app.group().all();
-        Assert.assertEquals(afterRunningTest.size(), beforeRunningTest.size() - 1);
-
-        // Уменьшаем кол-во элементов списка на еденицу, т.к была удалена одна группа
-        beforeRunningTest.remove(deletedGroup);
-
-        // Сравниваем два списка (список beforeRunningTest станет на еденицу меньше)
-        Assert.assertEquals(beforeRunningTest, afterRunningTest);
+        Groups after = app.group().all();
+        assertThat(after.size(), equalTo(before.size() - 1));
+        assertThat(after, equalTo(before.without(deletedGroup)));
     }
 }
 
