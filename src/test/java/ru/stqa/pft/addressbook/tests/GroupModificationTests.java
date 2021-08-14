@@ -4,10 +4,13 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import ru.stqa.pft.addressbook.model.GroupData;
+import ru.stqa.pft.addressbook.model.Groups;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class GroupModificationTests extends TestBase {
 
@@ -27,54 +30,11 @@ public class GroupModificationTests extends TestBase {
      * Тест модифицирует группу, чтобы модифицировать группу, она должна существовать. Проверяет, что при модификации группы, кол-во групп не изменяется
      */
     @Test
-    public void testGroupModification() {
-
-        // Получает значение списка количества групп до прохождения теста
-        List<GroupData> beforeRunningTest = app.group().list();
-        int index = beforeRunningTest.size() - 1;
-
-        app.group().selectGroup(index);
-        app.group().initGroupModification();
-        GroupData group = new GroupData()
-                .withId(beforeRunningTest.get(index).getId())
-                .withName("test1")
-                .withHeader("test2")
-                .withFooter("test3");
-        app.group().fillGroupForm(group);
-        app.group().submitGroupModification();
-        app.group().returnToGroupPage();
-
-        // Получает значение списка количества групп после прохождения теста
-        List<GroupData> afterRunningTest = app.group().list();
-        Assert.assertEquals(afterRunningTest.size(), beforeRunningTest.size());
-
-        /**
-         * Задача проверить, что после модификации списки остались одинаковыми до и после теста
-         */
-        // При модификации группы, сменится ее имя, группа может попасть в рандомное место списка по алфавиту
-        // Для такой проверки нужно использовать неупорядоченные множества
-
-        // Удаляем из списка группу, которую мы выбрали для модификации, т.к она перестанет существовать
-        beforeRunningTest.remove(index);
-
-        // Вместо нее добавляем новую группу
-        beforeRunningTest.add(group);
-
-        // Сравниваем неупорядоченные множества, проблема в том, что множества не позволяют дублирование элементов -> группы с оиднаковыми именами будут считаться за одну группу
-        // Для этого вводим уникальный идентифиактор "id"
-        Assert.assertEquals(new HashSet<Object>(afterRunningTest), new HashSet<Object>(beforeRunningTest));
-    }
-
-
-    /**
-     * Тест модифицирует группу, чтобы модифицировать группу, она должна существовать. Проверяет, что при модификации группы, кол-во групп не изменяется
-     */
-    @Test
     public void testGroupModificationWithSortedCollections() {
 
         // Получает значение списка количества групп до прохождения теста
-        Set<GroupData> beforeRunningTest = app.group().all();
-        GroupData modifiedGroup = beforeRunningTest.iterator().next();
+        Groups before = app.group().all();
+        GroupData modifiedGroup = before.iterator().next();
 
         GroupData group = new GroupData()
                 .withId(modifiedGroup.getId())
@@ -85,8 +45,8 @@ public class GroupModificationTests extends TestBase {
         app.group().modify(group);
 
         // Получает значение списка количества групп после прохождения теста
-        Set<GroupData> afterRunningTest = app.group().all();
-        Assert.assertEquals(afterRunningTest.size(), beforeRunningTest.size());
+        Groups after = app.group().all();
+        assertThat(after.size(), equalTo(before.size()));
 
         /**
          * Задача проверить, что после модификации списки остались одинаковыми до и после теста
@@ -94,11 +54,7 @@ public class GroupModificationTests extends TestBase {
         // При модификации группы, сменится ее имя, группа может попасть в рандомное место списка по алфавиту
         // Для такой проверки нужно использовать неупорядоченные множества
 
-        // Удаляем из списка группу, которую мы выбрали для модификации, т.к она перестанет существовать
-        beforeRunningTest.remove(modifiedGroup);
 
-        // Вместо нее добавляем новую группу
-        beforeRunningTest.add(group);
-        Assert.assertEquals(afterRunningTest, beforeRunningTest);
+        assertThat(after, equalTo(before.without(modifiedGroup).withAdded(group)));
     }
 }
