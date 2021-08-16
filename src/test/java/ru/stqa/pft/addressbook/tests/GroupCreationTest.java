@@ -1,10 +1,11 @@
 package ru.stqa.pft.addressbook.tests;
 
-import org.testng.Assert;
 import org.testng.annotations.Test;
 import ru.stqa.pft.addressbook.model.GroupData;
 
 import java.util.Set;
+
+import static org.testng.Assert.*;
 
 public class GroupCreationTest extends TestBase {
 
@@ -22,7 +23,7 @@ public class GroupCreationTest extends TestBase {
 
         // Получает значение списка количества групп после прохождения теста
         Set<GroupData> afterRunningTest = app.group().all();
-        Assert.assertEquals(afterRunningTest.size(), beforeRunningTest.size() + 1);
+        assertEquals(afterRunningTest.size(), beforeRunningTest.size() + 1);
 
         group
                 // Нужно взять максимальный идентификатор
@@ -40,6 +41,22 @@ public class GroupCreationTest extends TestBase {
 
         // Добавляем новую группу
         beforeRunningTest.add(group);
-        Assert.assertEquals(afterRunningTest, beforeRunningTest);
+        assertEquals(afterRunningTest, beforeRunningTest);
+    }
+
+
+    /**
+     * Тест создания новой группы. Проверяет, нельзя создать группу со знаком "'" в названии
+     */
+    @Test
+    public void testBadGroupCreation() {
+        app.goTo().groupPage();
+        Set<GroupData> beforeRunningTest = app.group().all();
+        GroupData group = new GroupData().withName("test2'");
+        app.group().create(group);
+        assertEquals(app.group().count(), beforeRunningTest.size());
+        Set<GroupData> afterRunningTest = app.group().all();
+        group.withId(afterRunningTest.stream().mapToInt((g) -> g.getId()).max().getAsInt());
+        assertEquals(afterRunningTest, beforeRunningTest);
     }
 }
