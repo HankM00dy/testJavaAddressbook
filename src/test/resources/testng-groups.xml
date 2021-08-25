@@ -1,0 +1,16 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="Suite1" verbose="1">
+    <test name="Groups">
+        <classes>
+            <class name="ru.stqa.pft.addressbook.tests.GroupCreationTest"></class>
+            <class name="ru.stqa.pft.addressbook.tests.GroupModificationTests"></class>
+            <class name="ru.stqa.pft.addressbook.tests.GroupDeletionTest"></class>
+        </classes>
+    </test>
+    <test name="Contacts">
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="ru.stqa.pft.addressbook.tests.ContactCreationTests"/>
+        </classes>
+    </test>
+</suite>
